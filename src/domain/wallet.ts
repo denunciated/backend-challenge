@@ -9,7 +9,7 @@ export interface WalletState {
   balance: Money;
   version: number;
   createdAt: Date;
-  updateAt: Date;
+  updatedAt: Date;
 }
 
 export class Wallet {
@@ -23,7 +23,7 @@ export class Wallet {
       balance: props.initialBalance,
       version: 1,
       createdAt: now,
-      updateAt: now,
+      updatedAt: now,
     });
   }
 
@@ -31,7 +31,7 @@ export class Wallet {
     if (this.balance.equals(balance)) return;
     this.state.balance = balance;
     this.state.version++;
-    this.state.updateAt = new Date();
+    this.state.updatedAt = new Date();
   }
 
   static rehydrate(state: WalletState): Wallet {
@@ -68,6 +68,10 @@ export class Wallet {
   credit(money: Money): void {
     if (money.isNegative()) throw new DomainError('INVALID_AMOUNT');
     this.move(this.balance.add(money));
+  }
+
+  toJSON() {
+    return { id: this.id, playerId: this.playerId, balance: this.balance.toJSON(), version: this.version };
   }
 }
 

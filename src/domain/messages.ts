@@ -90,6 +90,10 @@ export class OutboxMessage {
     return this.state.payload;
   }
 
+  get occurredAt() {
+    return this.state.occurredAt;
+  }
+
   get attempts() {
     return this.state.attempts;
   }
