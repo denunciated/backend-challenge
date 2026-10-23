@@ -111,6 +111,13 @@ export class WagerTransaction {
     this.state.processedAt = new Date();
   }
 
+  fail(code: FailureCode): void {
+    this.assertMutable();
+    this.state.status = 'FAILED';
+    this.state.failureCode = code;
+    this.state.processedAt = new Date();
+  }
+
   validateReference(reference: WagerTransaction): void {
     const a = this.state,
       b = reference.state;
