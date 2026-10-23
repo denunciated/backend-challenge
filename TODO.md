@@ -4,9 +4,6 @@
 
 ### In Progress
 
-- [ ] do docker compose and dockerfile
-- [ ] do ARCHTETURE.md
-
 ### Done ✓
 
 - [x] do the api
@@ -14,3 +11,5 @@
 - [x] do app.ts
 - [x] do the metrics file (so prometheus can use it)
 - [x] do tests
+- [x] do docker compose and dockerfile
+- [x] do ARCHTETURE.md

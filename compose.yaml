@@ -1,0 +1,78 @@
+name: wagering-challange
+x-app: &app
+  build: .
+  environment: &environment
+    DATABASE_URL: postgres://wager:wager@postgres:5432/wager
+    SQS_ENDPOINT: http://localstack:4566
+    AWS_REGION: us-east-1
+    AWS_ACCESS_KEY_ID: test
+    AWS_SECRET_ACCESS_KEY: test
+    PORT: 3000
+  depends_on:
+    setup:
+      condition: service_completed_successfully
+  stop_grace_period: 40s
+  healthcheck:
+    test:
+      ['CMD', 'bun', '-e', "const r = await fetch('http://localhost:3000/health/ready'); process.exit(r.ok ? 0 : 1)"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_USER: wager
+      POSTGRES_PASSWORD: wager
+      POSTGRES_DB: wager
+    ports: ['127.0.0.1:5432:5432']
+    volumes: ['postgres-data:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U wager -d wager']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  localstack:
+    image: localstack/localstack:4.10.0
+    environment:
+      SERVICES: sqs
+      SQS_ENDPOINT_STRATEGY: path
+      LOCALSTACK_HOST: localstack:4566
+    ports: ['127.0.0.1:4566:4566']
+    healthcheck:
+      test: ['CMD', 'awslocal', 'sqs', 'list-queues']
+      interval: 3s
+      timeout: 5s
+      retries: 30
+  setup:
+    build: .
+    environment: *environment
+    command: ['sh', '-c', 'bun run migration:up && bun run queues:init']
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+  app:
+    <<: *app
+    ports: ['127.0.0.1:3000:3000']
+  app-2:
+    <<: *app
+    ports: ['127.0.0.1:3001:3000']
+  app-3:
+    <<: *app
+    ports: ['127.0.0.1:3002:3000']
+  test:
+    <<: *app
+    profiles: ['test']
+    environment:
+      <<: *environment
+      DATABASE_URL: postgres://wager:wager@postgres:5432/wager_test
+      WORKERS_ENABLED: 'false'
+      REFERENCE_BASE_DELAY_MS: 10
+      REFERENCE_MAX_ATTEMPTS: 3
+      SQS_QUEUE_PREFIX: wager-test
+    command: ['bun', 'run', 'test:all']
+volumes:
+  postgres-data:
+  
