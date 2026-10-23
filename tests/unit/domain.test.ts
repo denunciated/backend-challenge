@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { Money } from '../../src/domain/money';
 import { Wallet, WalletLedgerEntry } from '../../src/domain/wallet';
 import { WagerTransaction, type Kind } from '../../src/domain/transaction';
-import { parseWager, canonicalJson } from '../../src/application/contracts';
+import { parseWager, canonicalJson } from '../../src/app/contracts';
 import { InboxMessage, OutboxMessage } from '../../src/domain/messages';
 import { WagerTransactionProcessed } from '../../src/domain/events';
 
@@ -139,7 +139,7 @@ describe('WagerTransaction', () => {
   });
 });
 test('persistent message model transitions and exponential backoff', () => {
-  const inbox = InboxMessage.receive({ messageId: 'm', consumerName: 'c', payloadHash: 'h' });
+  const inbox = InboxMessage.recieve({ messageId: 'm', consumerName: 'c', payloadHash: 'h' });
   expect(inbox.isProcessed()).toBe(false);
   inbox.markProcessed(new Date());
   expect(inbox.isProcessed()).toBe(true);
