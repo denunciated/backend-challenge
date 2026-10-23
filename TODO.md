@@ -2,15 +2,14 @@
 
 ### Todo
 
-- [ ] do docker compose and dockerfile  
-- [ ] do main.ts  
-- [ ] do app.ts  
-- [ ] do the metrics file (so prometheus can use it)  
+- [ ] do docker compose and dockerfile
 
 ### In Progress
 
-- [ ] do the api  
+- [ ] do the metrics file (so prometheus can use it)
 
 ### Done ✓
 
-
+- [x] do the api
+- [x] do main.ts
+- [x] do app.ts
